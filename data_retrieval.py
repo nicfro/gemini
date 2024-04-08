@@ -12,22 +12,23 @@ class DataRetrieval:
     def __init__(self, category='cs.LG', max_results=20):
         env = Env()
         env.read_env()
+        
+        AWS_ACCESS_KEY_S3 = env.str("AWS_ACCESS_KEY_S3", default="")
+        AWS_SECRET_KEY_S3 = env.str("AWS_SECRET_KEY_S3", default="")
 
-        # AWS_ACCESS_KEY_S3 = env.str("AWS_ACCESS_KEY_S3")
-        # AWS_SECRET_KEY_S3 = env.str("AWS_SECRET_KEY_S3")
+        if AWS_ACCESS_KEY_S3 != "" and AWS_SECRET_KEY_S3 != "":    
+            # Initialize a session using Amazon S3
+            self.session = boto3.Session(
+                aws_access_key_id=AWS_ACCESS_KEY_S3,
+                aws_secret_access_key=AWS_SECRET_KEY_S3,
+                region_name='us-east-1'
+            )
+            self.s3_client = self.session.client('s3')
+            self.s3_resource = self.session.resource('s3')
 
         # Configure your AWS details
         self.bucket_name = 'arxiv'  # The name of the arXiv bucket
         self.prefix = 'pdf/'  # Adjust this prefix based on whether you're downloading PDFs or source files
-
-        # Initialize a session using Amazon S3
-        # self.session = boto3.Session(
-        #     aws_access_key_id=AWS_ACCESS_KEY_S3,
-        #     aws_secret_access_key=AWS_SECRET_KEY_S3,
-        #     region_name='us-east-1'
-        # )
-        # self.s3_client = self.session.client('s3')
-        # self.s3_resource = self.session.resource('s3')
         self.category = category
         self.max_results = max_results
 
@@ -148,7 +149,7 @@ class DataRetrieval:
         return files
         
 retrieve = DataRetrieval('cs.LG', 20)
-all_metadata = retrieve.fetch_metadata(0, 200)
-retrieve.save_metadata_to_file(all_metadata, 'C:\\Users\\jooda\\Documents\\GitHub\\gemini\\data\\metadata.xml')
-files = retrieve.find_files_in_manifest_from_metadata('C:\\Users\\jooda\\Documents\\GitHub\\gemini\\data\\metadata.xml', 'C:\\Users\\jooda\\Documents\\GitHub\\gemini\\data\\arXiv_pdf_manifest.xml')
-print(files)
+# all_metadata = retrieve.fetch_metadata(0, 200)
+# retrieve.save_metadata_to_file(all_metadata, 'C:\\Users\\jooda\\Documents\\GitHub\\gemini\\data\\metadata.xml')
+# files = retrieve.find_files_in_manifest_from_metadata('C:\\Users\\jooda\\Documents\\GitHub\\gemini\\data\\metadata.xml', 'C:\\Users\\jooda\\Documents\\GitHub\\gemini\\data\\arXiv_pdf_manifest.xml')
+# print(files)
